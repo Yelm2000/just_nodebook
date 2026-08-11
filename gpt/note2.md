@@ -78,9 +78,7 @@
   - MCP：用于访问外部工具和共享系统的 MCP
   - Subagents ：负责将工作分配给专业子代理的代理人员
 - AGENTS.md 决定了行为，Meories传递了局部上下文信息；Skills实现了可重复的过程；MCP 将 Codex 与局部工作空间之外的系统连接起来。
-
-
-- AGENTS Guidance  代理指导方针：AGENTS.md 提供了耐用的项目指导文档，该文档会随你的仓库一起保存，并在代理程序开始工作之前生效。请尽量保持文档的简短性。
+- AGENTS Guidance：AGENTS.md 提供了耐用的项目指导文档，该文档会随你的仓库一起保存，并在代理程序开始工作之前生效。请尽量保持文档的简短性。
   - 可以包括：
     - 构建和测试命令
     - 审查预期目标
@@ -91,12 +89,60 @@
     - 阅读量过大：如果系统能够找到正确的文件，但同时读取了过多的文档，那么就需要增加路由指导功能（明确哪些目录/文件应该优先处理）。
     - 在 GitHub 上：在拉取请求评论中，给 @codex 加上一个标签，不用自己打开 AGENTS.md 手工修改，可以直接在 PR 评论里命令 Codex 把这次经验整理进去。
     - 自动化漂移检查：使用定时任务来定期执行检查（例如每天一次），以发现指导中的漏洞，检查最近的代码改动和 PR，寻找 AGENTS.md 中已经过时、缺失或者反复被人工纠正的规则，并提出应该新增或修改哪些 AGENTS.md 内容。
-  - 位置：可以是位于你 Codex 目录下的全局文件（供开发者使用），也可以是在仓库中存储的特定文件，团队可以访问这些文件。位于工作目录附近的文件具有优先处理权。
-- Skills  技能：为 Codex 提供了可重复使用的功能。因为技能能够支持更丰富的指令、脚本和引用，同时还能在多个任务中重复使用。因为技能能够支持更丰富的指令、脚本和引用，同时还能在多个任务中重复使用。技能会被加载到系统中，并能被代理识别（至少包括其元数据），因此 Codex 可以自动发现并选择这些技能。这样就能在不增加过多上下文信息的情况下，实现复杂的工作流程。
+- Skills：为 Codex 提供了可重复使用的功能。因为技能能够支持更丰富的指令、脚本和引用，同时还能在多个任务中重复使用。因为技能能够支持更丰富的指令、脚本和引用，同时还能在多个任务中重复使用。技能会被加载到系统中，并能被代理识别（至少包括其元数据），因此 Codex 可以自动发现并选择这些技能。这样就能在不增加过多上下文信息的情况下，实现复杂的工作流程。
 - MCP：当工作流程需要依赖外部系统时（如线性系统、GitHub、文档服务器、设计工具等），MCP 就派上用场了。
-- Subagents ：当您准备好将那些需要大量精力或技术性的任务委托给下属代理人时，就可以这样做。
+- Subagents：当您准备好将那些需要大量精力或技术性的任务委托给下属代理人时，就可以这样做。
+## Memory 记忆
+- 在 ChatGPT 桌面应用中，可以使用 /memories 来选择聊天会话是使用本地存储的数据，还是会生成新的记忆。当您需要开启或关闭此功能时，可以通过设置中的“个性化”选项来进行管理。
+- “Chronicle”是一个仅适用于桌面的功能，它能够帮助 Codex 从屏幕上恢复最近的工作环境，从而重建内存中的相关信息。
+- 可以使用 /memories 来控制当前聊天的内存使用行为。在聊天层面，你可以决定当前聊天是否可以使用已有的记忆数据，以及 Codex 是否可以利用该聊天记录来生成新的记忆内容。
+## Chronicle  编年史
 
-     
+# Config file 配置文件
+## Config basics 配置基础知识
+- .codex/config.toml
+- 配置优先级:
+  - CLI 标志和 --config 覆盖选项
+  - 项目配置文件： .codex/config.toml ，按照从项目根目录到当前工作目录的顺序排列（最近的位置优先；仅适用于受信任的项目）
+  - 已选择用于存储个人资料的配置文件，文件编号为 --profile profile-name （ ~/.codex/profile-name.config.toml ）
+  - 用户配置： ~/.codex/config.toml
+  - 系统配置（如果存在）： /etc/codex/config.toml 在 Unix 系统上
+  - 内置默认设置
+  - 可以理解为有很多配置选项，chatgpt会按照进入处理文件的顺序加载配置文件，覆盖对应配置选项
+- 常见的配置选项
+  - 默认模型：model = "gpt-5.6"
+  - 审批提示：approval_policy = "on-request"
+  - 沙盒等级：sandbox_mode = "workspace-write"
+  - 权限配置文件：Codex 还支持名为“权限配置文件”的功能，这些配置文件可用于管理可重复使用的文件系统和网络策略。内置的配置文件分别是 :read-only 、 :workspace 和 :danger-full-access 。自定义配置文件则使用 [permissions.<name>] 表，并关联相应的 default_permissions 值。更多关于权限配置的信息，请参考相关章节。
+  - Windows 沙盒模式：[windows] sandbox = "elevated"。在 Windows 操作系统上运行 Codex 时，请将在 windows 表中设置的原生沙盒模式改为 elevated 。只有当你没有管理员权限或者提升权限后的安装失败时，才使用 unelevated 模式
+  - 网络搜索模式：web_search = "cached" 
+    - "cached" （默认设置）会从网络搜索缓存中获取结果。
+    - "indexed" 仅在搜索索引处理完请求后，才允许外部网络访问。
+    - "live" 可以从网络上获取最新数据（与 --search 相同）。
+    - "disabled" 会关闭网络搜索工具
+  - Reasoning effort  推理努力：model_reasoning_effort = "high"，观察在获得支持时，模型会投入多少推理努力来解决问题。
+  - 沟通方式：personality = "friendly" # or "pragmatic" or "none"
+  - TUI 键位映射：就是快捷键
+  - 命令环境：可以控制 Codex 发送给所生成的命令的各种环境变量。使用带有键的过滤器功能，只保留你需要的那些变量。
+    - [shell_environment_policy]
+      ignore_default_excludes = false
+      [shell_environment_policy.filters]
+      "PATH" = "include"
+      "HOME" = "include"
+  - ignore_default_excludes 默认设置为 true ，这样就会跳过对包含 KEY 、 SECRET 或 TOKEN 的变量名进行自动过滤的操作。当你需要这种自动过滤功能时，可以将变量名设置为 false 。关于排除规则、优先级以及旧版配置的相关信息，请参阅 Shell 环境策略。
+- 日志目录：log_dir = "/absolute/path/to/codex-logs"
+- 特性标志：可以使用 config.toml 中的 [features] #表格来切换可选功能与实验性功能。
+## Advanced Configuration  高级配置
+
+
+
+
+
+
+
+
+
+
 
 
 
