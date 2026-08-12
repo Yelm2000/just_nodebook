@@ -71,6 +71,7 @@
 # Configuration   配置
 - 配置决定了 ChatGPT 以及 Codex 开发工具在聊天、代码仓库和机器上的行为方式。持久化的上下文存储、配置文件、仓库管理功能、子代理、外部连接以及 Windows 系统设置等因素共同协作，使得这些工作流程能够保持一致，无论是对个人还是团队来说都是如此。
 ## Customization  定制化
+### Overview 概述
 - 在 Codex 中，自定义功能是由多个相互协作的组件共同实现的：
   - 项目指导方针（ AGENTS.md ）：用于持续性的指示操作。
   - 记忆信息（Meories）：从以往的工作中获得的、有助于理解当前情境
@@ -92,23 +93,25 @@
 - Skills：为 Codex 提供了可重复使用的功能。因为技能能够支持更丰富的指令、脚本和引用，同时还能在多个任务中重复使用。因为技能能够支持更丰富的指令、脚本和引用，同时还能在多个任务中重复使用。技能会被加载到系统中，并能被代理识别（至少包括其元数据），因此 Codex 可以自动发现并选择这些技能。这样就能在不增加过多上下文信息的情况下，实现复杂的工作流程。
 - MCP：当工作流程需要依赖外部系统时（如线性系统、GitHub、文档服务器、设计工具等），MCP 就派上用场了。
 - Subagents：当您准备好将那些需要大量精力或技术性的任务委托给下属代理人时，就可以这样做。
-## Memory 记忆
+### Memory 记忆
 - 在 ChatGPT 桌面应用中，可以使用 /memories 来选择聊天会话是使用本地存储的数据，还是会生成新的记忆。当您需要开启或关闭此功能时，可以通过设置中的“个性化”选项来进行管理。
 - “Chronicle”是一个仅适用于桌面的功能，它能够帮助 Codex 从屏幕上恢复最近的工作环境，从而重建内存中的相关信息。
 - 可以使用 /memories 来控制当前聊天的内存使用行为。在聊天层面，你可以决定当前聊天是否可以使用已有的记忆数据，以及 Codex 是否可以利用该聊天记录来生成新的记忆内容。
-## Chronicle  编年史
-
-# Config file 配置文件
-## Config basics 配置基础知识
+### Chronicle  编年史
+## Config file 配置文件
+### Config
 - .codex/config.toml
 - 配置优先级:
-  - CLI 标志和 --config 覆盖选项
-  - 项目配置文件： .codex/config.toml ，按照从项目根目录到当前工作目录的顺序排列（最近的位置优先；仅适用于受信任的项目）
-  - 已选择用于存储个人资料的配置文件，文件编号为 --profile profile-name （ ~/.codex/profile-name.config.toml ）
+  - CLI 标志和 --config，codex --config key=toml-value = codex --key value
+  - 项目配置文件： .codex/config.toml ，最近的位置优先；仅适用于受信任的项目
+  - 已选择用于存储个人资料的配置文件，codex --profile profile-name ，即使用~/.codex/profile-name.config.toml
+    - 直接用profile-name定位，不要再在.toml里写[profiles.profile-name]了
   - 用户配置： ~/.codex/config.toml
   - 系统配置（如果存在）： /etc/codex/config.toml 在 Unix 系统上
   - 内置默认设置
   - 可以理解为有很多配置选项，chatgpt会按照进入处理文件的顺序加载配置文件，覆盖对应配置选项
+- 配置文件内容写法：
+  - [A.B] C="D"  ==  A.B.C = "D"
 - 常见的配置选项
   - 默认模型：model = "gpt-5.6"
   - 审批提示：approval_policy = "on-request"
@@ -132,8 +135,6 @@
   - ignore_default_excludes 默认设置为 true ，这样就会跳过对包含 KEY 、 SECRET 或 TOKEN 的变量名进行自动过滤的操作。当你需要这种自动过滤功能时，可以将变量名设置为 false 。关于排除规则、优先级以及旧版配置的相关信息，请参阅 Shell 环境策略。
 - 日志目录：log_dir = "/absolute/path/to/codex-logs"
 - 特性标志：可以使用 config.toml 中的 [features] #表格来切换可选功能与实验性功能。
-## Advanced Configuration  高级配置
-
 
 
 
