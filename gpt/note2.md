@@ -102,7 +102,9 @@
 ### Config
 - .codex/config.toml
 - 配置优先级:
-  - CLI 标志和 --config，codex --config key=toml-value = codex --key value
+  - CLI 标志和 --config，codex --config key=toml-value == codex --key value
+    - .表示嵌套，文件中这么写配置[A.B] C="D"  等于命令行 --config A.B.C = "D"
+    - 也可以写做codex --config 'key=toml-value'，来保障这个命令行不因为空格被截断
   - 项目配置文件： .codex/config.toml ，最近的位置优先；仅适用于受信任的项目
   - 已选择用于存储个人资料的配置文件，codex --profile profile-name ，即使用~/.codex/profile-name.config.toml
     - 直接用profile-name定位，不要再在.toml里写[profiles.profile-name]了
@@ -110,10 +112,20 @@
   - 系统配置（如果存在）： /etc/codex/config.toml 在 Unix 系统上
   - 内置默认设置
   - 可以理解为有很多配置选项，chatgpt会按照进入处理文件的顺序加载配置文件，覆盖对应配置选项
+  - 项目配置文件**无法覆盖**那些用于重定向凭证、修改主机上应用程序的元数据、更改提供者认证方式、选择配置配置文件，或者执行机器本地通知/监控命令的设置。Codex 在访问项目级别的 .codex/config.toml 文件时会忽略以下键位，并在遇到这些键位时输出启动警告信息： openai_base_url 、 chatgpt_base_url 、 apps_mcp_product_sku 、 model_provider 、 model_providers 、 notify 、 profile 、 profiles 、 experimental_realtime_ws_base_url 以及 otel 。请在使用者级别的 ~/.codex/config.toml 中设置提供者、通知和监控相关的键位；通过 --profile profile-name 和 ~/.codex/profile-name.config.toml 来选择配置配置文件。
 - 配置文件内容写法：
   - [A.B] C="D"  ==  A.B.C = "D"
 - 常见的配置选项
-  - 默认模型：model = "gpt-5.6"
+  - 模型
+    - 默认模型：model = "gpt-5.6"
+    - 模型推理总结：model_reasoning_summary = "none"          # Disable summaries
+    - 模型冗长表达：model_verbosity = "low"                   # Shorten responses
+    - 模型支持推理总结：model_supports_reasoning_summaries = true # Force reasoning
+    - 模型上下文窗口：model_context_window = 128000             # Context window size
+    - Custom model providers  定制模型提供商
+      - model=""
+      - model_provider="XXX"
+      - [model_providers.XXX] name="" base_url="" env_key="" ...
   - 审批提示：approval_policy = "on-request"
   - 沙盒等级：sandbox_mode = "workspace-write"
   - 权限配置文件：Codex 还支持名为“权限配置文件”的功能，这些配置文件可用于管理可重复使用的文件系统和网络策略。内置的配置文件分别是 :read-only 、 :workspace 和 :danger-full-access 。自定义配置文件则使用 [permissions.<name>] 表，并关联相应的 default_permissions 值。更多关于权限配置的信息，请参考相关章节。
@@ -131,10 +143,35 @@
       ignore_default_excludes = false
       [shell_environment_policy.filters]
       "PATH" = "include"
-      "HOME" = "include"
+      "HOME" = "excude"
   - ignore_default_excludes 默认设置为 true ，这样就会跳过对包含 KEY 、 SECRET 或 TOKEN 的变量名进行自动过滤的操作。当你需要这种自动过滤功能时，可以将变量名设置为 false 。关于排除规则、优先级以及旧版配置的相关信息，请参阅 Shell 环境策略。
+  - 设置根目录：project_root_markers = [".git", ".hg", ".sl"]
+  - MCP
+  - Observability and telemetry 可观测性和远程监控：启用 OpenTelemetry (OTel)日志导出功能[otel]
+  - Notifications  通知/提示
+    - 使用 notify 可以在 Codex 发出支持的事件时触发外部程序的运行（当前仅适用于 agent-turn-complete 
+    - notify = ["python3", "/path/to/notify.py"]
+  - History persistence  历史保存
+    - [history] persistence = "none" max_bytes = 104857600
+  - Clickable citations  可点击的引用内容：就是给在chat中输入的内容生成一个直达的超链接
+    - file_opener = "vscode" # or cursor, windsurf, vscode-insiders, none
+  - Project instructions discovery 项目指令的查找：对AGENTS.md的读入限制规定
+    - project_doc_max_bytes ：每个 AGENTS.md 文件需要读取多少内容
+    - project_doc_fallback_filenames ：在 AGENTS.md 缺失时，在目录级别尝试使用的其他文件名
+  - Desktop  桌面电脑
+    - Add custom file handlers  添加自定义文件处理程序 
+      - [desktop.custom_file_handlers.XXX] label icon command ...
+      - 在您的用户级别设置中，为 desktop.custom_file_handlers 添加条目，将这些条目指向那些 ChatGPT 桌面应用程序**默认不支持**的编辑器或内部启动器。
+      - 表现为custom:XXX
+      - XXX包含.时要用""转义，比如 [desktop.custom_file_handlers."company.editor"]
+  - TUI options  TUI 选项：codex 在 [tui] 下提供了一些针对终端用户界面的配置选项
 - 日志目录：log_dir = "/absolute/path/to/codex-logs"
 - 特性标志：可以使用 config.toml 中的 [features] #表格来切换可选功能与实验性功能。
+- 常见配置参考
+
+### 代理 AGENTS.md + config.toml 中的 [agents]
+-
+### Hooks 钩子 hooks.json
 
 
 
