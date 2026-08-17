@@ -1,0 +1,13 @@
+{
+  "name": "just-nodebook",
+  "version": "1.0.0",
+  "description": "A simple notebook application with cloud AI agent delegation",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "keywords": ["notebook", "ai", "agent"],
+  "license": "MIT"
+}

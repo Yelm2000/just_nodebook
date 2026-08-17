@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>just_nodebook</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="app-header">
+    <div class="app-header__logo">📓 just_nodebook</div>
+    <div class="app-header__actions">
+      <button id="btn-add-code" class="btn btn--primary">＋ 代码单元格</button>
+      <button id="btn-add-md" class="btn btn--secondary">＋ Markdown</button>
+    </div>
+  </header>
+
+  <main class="notebook-container" id="notebook-container">
+    <!-- Cells are rendered here dynamically -->
+    <div class="loading" id="loading">加载中…</div>
+  </main>
+
+  <!-- Agent response panel -->
+  <div class="agent-panel" id="agent-panel" hidden>
+    <div class="agent-panel__header">
+      <span class="agent-panel__title">🤖 云智能体响应 / Cloud AI Agent Response</span>
+      <button class="agent-panel__close" id="agent-panel-close" aria-label="关闭">✕</button>
+    </div>
+    <div class="agent-panel__body" id="agent-panel-body"></div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
